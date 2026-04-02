@@ -9,7 +9,7 @@
   transition: all var(--transition-normal);
   overflow: hidden;
   width: 100%;
-  max-width: 720px;
+  max-width: 900px;
 }
 
 /* Animated gradient border */
@@ -18,9 +18,18 @@
   inset: 0;
   border-radius: 20px;
   padding: 1.5px;
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.15), rgba(167, 139, 250, 0.08), rgba(129, 140, 248, 0.15));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  background: linear-gradient(
+    135deg,
+    rgba(129, 140, 248, 0.15),
+    rgba(167, 139, 250, 0.08),
+    rgba(129, 140, 248, 0.15)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
@@ -28,7 +37,12 @@
 }
 
 .upload-zone:hover:not(.upload-zone--active) .upload-zone-border {
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.4), rgba(167, 139, 250, 0.25), rgba(139, 92, 246, 0.4));
+  background: linear-gradient(
+    135deg,
+    rgba(129, 140, 248, 0.4),
+    rgba(167, 139, 250, 0.25),
+    rgba(139, 92, 246, 0.4)
+  );
 }
 
 .upload-zone:hover:not(.upload-zone--active) {
@@ -42,7 +56,12 @@
 }
 
 .upload-zone--active .upload-zone-border {
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.3), rgba(167, 139, 250, 0.2), rgba(129, 140, 248, 0.3));
+  background: linear-gradient(
+    135deg,
+    rgba(129, 140, 248, 0.3),
+    rgba(167, 139, 250, 0.2),
+    rgba(129, 140, 248, 0.3)
+  );
 }
 
 .upload-zone--hover:not(.upload-zone--active) {
@@ -51,7 +70,12 @@
 }
 
 .upload-zone--hover:not(.upload-zone--active) .upload-zone-border {
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.6), rgba(167, 139, 250, 0.4), rgba(139, 92, 246, 0.6));
+  background: linear-gradient(
+    135deg,
+    rgba(129, 140, 248, 0.6),
+    rgba(167, 139, 250, 0.4),
+    rgba(139, 92, 246, 0.6)
+  );
 }
 
 /* ── Upload progress (active state) ── */
@@ -170,8 +194,12 @@
   gap: 6px;
 }
 
-.stage-label--done { color: var(--color-success); }
-.stage-label--active { color: var(--color-text-light); }
+.stage-label--done {
+  color: var(--color-success);
+}
+.stage-label--active {
+  color: var(--color-text-light);
+}
 
 .stage-check {
   color: var(--color-success);
@@ -290,8 +318,13 @@
 }
 
 @keyframes iconFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 /* ── Responsive ── */
@@ -301,7 +334,9 @@
     border-radius: 16px;
   }
 
-  .upload-title { font-size: 17px; }
+  .upload-title {
+    font-size: 17px;
+  }
 
   .upload-meta-row {
     flex-wrap: wrap;
@@ -313,5 +348,7 @@
     height: 120px;
   }
 
-  .progress-value { font-size: 24px; }
+  .progress-value {
+    font-size: 24px;
+  }
 }

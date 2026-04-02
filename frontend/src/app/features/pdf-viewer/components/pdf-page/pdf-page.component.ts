@@ -10,12 +10,10 @@ import {
   OnChanges,
   SimpleChanges,
   ChangeDetectionStrategy,
-  inject,
 } from '@angular/core';
 import { TextLayer } from 'pdfjs-dist';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { PdfPageData, PdfField, FieldOverrides } from '../../../../core/models/pdf.models';
-import { LoggerService } from '../../../../core/services/logger.service';
 
 /**
  * Renders a single PDF page using a canvas element,
@@ -43,7 +41,6 @@ export class PdfPageComponent implements AfterViewInit, OnDestroy, OnChanges {
   @ViewChild('textLayer') textLayerRef!: ElementRef<HTMLDivElement>;
 
   private renderTask: any = null;
-  private logger = inject(LoggerService);
 
   /** Compute scale factor to fit page within container width. */
   get scaleFactor(): number {
@@ -109,7 +106,7 @@ export class PdfPageComponent implements AfterViewInit, OnDestroy, OnChanges {
       }
     } catch (error: any) {
       if (error.name !== 'RenderingCancelledException') {
-        this.logger.error('Error rendering PDF page', error);
+        console.error('Error rendering PDF page', error);
       }
     }
   }

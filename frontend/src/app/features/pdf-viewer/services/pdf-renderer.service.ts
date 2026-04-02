@@ -1,7 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import * as pdfjsLib from 'pdfjs-dist';
 import { PdfPageData, PdfField } from '../../../core/models/pdf.models';
-import { LoggerService } from '../../../core/services/logger.service';
 
 /**
  * Renders a PDF using pdf.js and maps extracted fields
@@ -9,8 +8,6 @@ import { LoggerService } from '../../../core/services/logger.service';
  */
 @Injectable({ providedIn: 'root' })
 export class PdfRendererService {
-  private logger = inject(LoggerService);
-
   constructor() {
     pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
       'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -55,7 +52,7 @@ export class PdfRendererService {
       });
     }
 
-    this.logger.info(`Rendered ${pages.length} PDF pages`);
+    console.log(`Rendered ${pages.length} PDF pages`);
     return pages;
   }
 }

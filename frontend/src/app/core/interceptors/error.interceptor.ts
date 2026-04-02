@@ -2,7 +2,6 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { ToastService } from '../../shared/services/toast.service';
-import { LoggerService } from '../services/logger.service';
 
 /**
  * Global HTTP error interceptor.
@@ -10,7 +9,6 @@ import { LoggerService } from '../services/logger.service';
  */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(ToastService);
-  const logger = inject(LoggerService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -28,7 +26,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         userMessage = 'Server error. Please try again later.';
       }
 
-      logger.error(`HTTP ${error.status} on ${req.method} ${req.url}`, error);
+      console.error(`HTTP ${error.status} on ${req.method} ${req.url}`, error);
 
       // Only show toast for non-suppressed errors
       if (!req.headers.has('X-Suppress-Toast')) {

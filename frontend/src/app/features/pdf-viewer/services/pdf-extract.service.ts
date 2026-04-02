@@ -3,7 +3,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { PdfField } from '../../../core/models/pdf.models';
-import { LoggerService } from '../../../core/services/logger.service';
 
 interface ExtractResponse {
   fields: PdfField[];
@@ -18,7 +17,6 @@ interface ExtractResponse {
 @Injectable({ providedIn: 'root' })
 export class PdfExtractService {
   private http = inject(HttpClient);
-  private logger = inject(LoggerService);
 
   private readonly _isExtracting = signal(false);
   private readonly _error = signal<string | null>(null);
@@ -48,8 +46,7 @@ export class PdfExtractService {
 
       this._fields.set(data.fields);
       this._documentJS.set(data.documentJS);
-      this.logger.info(`Extracted ${data.fields.length} fields from PDF`);
-      this.logger.debug('Document JS:', data.documentJS);
+      console.log(`Extracted ${data.fields.length} fields from PDF`);
 
       if (data.cleanedPdfBase64) {
         const binaryStr = atob(data.cleanedPdfBase64);
@@ -58,12 +55,12 @@ export class PdfExtractService {
           bytes[i] = binaryStr.charCodeAt(i);
         }
         this._cleanedPdfBuffer.set(bytes.buffer);
-        this.logger.debug('Received cleaned PDF from backend');
+        console.log('Received cleaned PDF from backend');
       }
 
       return data.fields;
     } catch (err: any) {
-      this.logger.error('Field extraction failed', err);
+      console.error('Field extraction failed', err);
       this._error.set('Failed to extract fillable fields from PDF');
       return [];
     } finally {

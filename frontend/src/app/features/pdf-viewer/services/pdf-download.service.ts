@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { PdfFileData } from '../../../core/models/pdf.models';
-import { LoggerService } from '../../../core/services/logger.service';
 import { ToastService } from '../../../shared/services/toast.service';
 
 /**
@@ -12,7 +11,6 @@ import { ToastService } from '../../../shared/services/toast.service';
 @Injectable({ providedIn: 'root' })
 export class PdfDownloadService {
   private http = inject(HttpClient);
-  private logger = inject(LoggerService);
   private toast = inject(ToastService);
 
   /** Download a PDF with filled form values from the backend. */
@@ -36,11 +34,15 @@ export class PdfDownloadService {
       }
 
       const response = await firstValueFrom(
-        this.http.post('/api/pdf/fill', {
-          pdfBase64,
-          formData: cleanFormData,
-          fileName: pdfFile.name || 'document.pdf',
-        }, { responseType: 'blob' }),
+        this.http.post(
+          '/api/pdf/fill',
+          {
+            pdfBase64,
+            formData: cleanFormData,
+            fileName: pdfFile.name || 'document.pdf',
+          },
+          { responseType: 'blob' },
+        ),
       );
 
       const url = URL.createObjectURL(response);
@@ -54,7 +56,7 @@ export class PdfDownloadService {
 
       this.toast.success('PDF downloaded successfully');
     } catch (err) {
-      this.logger.error('Download with filled values failed', err);
+      console.error('Download with filled values failed', err);
       this.toast.error('Failed to download filled PDF');
     }
   }

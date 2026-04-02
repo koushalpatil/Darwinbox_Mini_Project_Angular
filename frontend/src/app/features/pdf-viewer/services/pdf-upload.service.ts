@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { PdfFileData, UploadStage } from '../../../core/models/pdf.models';
-import { LoggerService } from '../../../core/services/logger.service';
 
 /**
  * Handles PDF file upload to S3 and retrieval.
@@ -12,7 +11,6 @@ import { LoggerService } from '../../../core/services/logger.service';
 @Injectable({ providedIn: 'root' })
 export class PdfUploadService {
   private http = inject(HttpClient);
-  private logger = inject(LoggerService);
 
   // ── Writable signals (private) ──
   private readonly _pdfFile = signal<PdfFileData | null>(null);
@@ -74,7 +72,7 @@ export class PdfUploadService {
       );
 
       this._uploadProgress.set(40);
-      this.logger.info('PDF uploaded to S3', uploadData.file);
+      console.log('PDF uploaded to S3', uploadData.file);
 
       const { key, name, size, type, uploadedAt, presignedUrl } = uploadData.file;
       this._s3Key.set(key);
@@ -100,11 +98,11 @@ export class PdfUploadService {
         s3Key: key,
       };
 
-      this.logger.debug('PDF loaded into memory for rendering', { name, size });
+      console.log('PDF loaded into memory for rendering', { name, size });
       this._isProcessing.set(false);
       this._pdfFile.set(fileData);
     } catch (err: any) {
-      this.logger.error('Upload/fetch error', err);
+      console.error('Upload/fetch error', err);
       const message =
         err?.error?.error || err?.message || 'An unexpected error occurred during upload';
       this._error.set(message);

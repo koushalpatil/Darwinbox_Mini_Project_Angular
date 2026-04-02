@@ -13,7 +13,6 @@ import { environment } from '../../../../../environments/environment';
 import { PdfUploadService } from '../../services/pdf-upload.service';
 import { PdfExtractService } from '../../services/pdf-extract.service';
 import { ToastService } from '../../../../shared/services/toast.service';
-import { LoggerService } from '../../../../core/services/logger.service';
 import { UploadZoneComponent } from '../../components/upload-zone/upload-zone.component';
 import { FilePreviewComponent } from '../../components/file-preview/file-preview.component';
 
@@ -35,7 +34,6 @@ export class PdfViewerPageComponent {
   private uploadService = inject(PdfUploadService);
   private extractService = inject(PdfExtractService);
   private toastService = inject(ToastService);
-  private logger = inject(LoggerService);
   private destroyRef = inject(DestroyRef);
 
   private extractionStarted = false;
@@ -51,15 +49,13 @@ export class PdfViewerPageComponent {
   readonly cleanedPdfBuffer = this.extractService.cleanedPdfBuffer;
 
   /** The buffer to use for rendering — prefer cleaned, fall back to original. */
-  readonly renderBuffer = computed(() => this.cleanedPdfBuffer() ?? this.pdfFile()?.arrayBuffer ?? null);
+  readonly renderBuffer = computed(
+    () => this.cleanedPdfBuffer() ?? this.pdfFile()?.arrayBuffer ?? null,
+  );
 
   /** True when upload + extraction is fully complete and preview can render. */
   readonly pipelineComplete = computed(() => {
-    return !!(
-      this.pdfFile() &&
-      this.renderBuffer() &&
-      this.currentStage() === 'done'
-    );
+    return !!(this.pdfFile() && this.renderBuffer() && this.currentStage() === 'done');
   });
 
   constructor() {
@@ -103,7 +99,7 @@ export class PdfViewerPageComponent {
       const minDisplayTime = new Promise((r) => setTimeout(r, 600));
       await Promise.all([this.extractService.extractFields(file), minDisplayTime]);
     } catch (error) {
-      this.logger.error('Error extracting fields', error);
+      console.error('Error extracting fields', error);
     }
 
     this.uploadService.setUploadProgress(100);
@@ -128,4 +124,3 @@ export class PdfViewerPageComponent {
     this.fileInputRef?.nativeElement?.click();
   }
 }
-

@@ -38,6 +38,7 @@ const STAGES: Stage[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './upload-zone.component.html',
   styleUrl: './upload-zone.component.css',
+  host: { style: 'display: block; width: 100%;' },
 })
 export class UploadZoneComponent {
   @Input() maxSizeMB = 10;

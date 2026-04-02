@@ -13,11 +13,16 @@ import {
 } from '@angular/core';
 import { PdfRendererService } from '../../services/pdf-renderer.service';
 import { PdfDownloadService } from '../../services/pdf-download.service';
-import { LoggerService } from '../../../../core/services/logger.service';
+
 import { PdfPageComponent } from '../pdf-page/pdf-page.component';
 import { PdfToolbarComponent, TOOLBAR_HEIGHT } from '../pdf-toolbar/pdf-toolbar.component';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner.component';
-import { PdfFileData, PdfField, PdfPageData, FieldOverrides } from '../../../../core/models/pdf.models';
+import {
+  PdfFileData,
+  PdfField,
+  PdfPageData,
+  FieldOverrides,
+} from '../../../../core/models/pdf.models';
 
 const ZOOM_STEP = 10;
 const ZOOM_MIN = 25;
@@ -52,7 +57,7 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private pdfRendererService = inject(PdfRendererService);
   private pdfDownloadService = inject(PdfDownloadService);
-  private logger = inject(LoggerService);
+
   private cdr = inject(ChangeDetectorRef);
 
   get zoomScale(): number {
@@ -164,7 +169,7 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
       this.cdr.detectChanges();
       setTimeout(() => this.setupResizeObserver());
     } catch (err) {
-      this.logger.error('PDF Render Error', err);
+      console.error('PDF Render Error', err);
       this.error = err;
       this.loading = false;
       this.cdr.detectChanges();
@@ -181,7 +186,7 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   handleSubmit(): void {
-    this.logger.info('Form submitted', this.formData);
+    console.log('Form submitted', this.formData);
   }
 
   handleZoomIn(): void {
