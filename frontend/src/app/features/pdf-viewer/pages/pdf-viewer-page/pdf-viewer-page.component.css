@@ -1,0 +1,31 @@
+.viewer-root {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--spacing-2xl) var(--spacing-md);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.viewer-root--fullscreen {
+  width: 100%;
+  max-width: none;
+  height: 100vh;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: calc(100vh - 180px);
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .viewer-root {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+}

@@ -1,0 +1,9 @@
+.form-field {
+  position: absolute;
+  pointer-events: auto;
+  box-sizing: border-box;
+}
+
+.form-field--required {
+  border-left: 2px solid var(--color-error);
+}

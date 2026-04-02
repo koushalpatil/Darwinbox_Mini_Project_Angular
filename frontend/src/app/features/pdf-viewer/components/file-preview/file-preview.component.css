@@ -1,0 +1,107 @@
+.preview-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 48px);
+  margin-top: 48px;
+  background: var(--color-surface-dark);
+}
+
+.preview-loading {
+  background: linear-gradient(180deg, rgba(14, 15, 20, 1) 0%, rgba(20, 22, 30, 1) 100%);
+}
+
+.preview-error {
+  color: var(--color-error);
+}
+
+.error-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.error-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: var(--color-text-light);
+}
+
+.error-message {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 var(--spacing-lg);
+  max-width: 400px;
+  text-align: center;
+}
+
+.retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--color-error);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.retry-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.pdf-scroll-container {
+  position: fixed;
+  top: 48px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  background: linear-gradient(180deg, #0e0f14 0%, #141622 100%);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom scrollbar */
+.pdf-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.pdf-scroll-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pdf-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
+.pdf-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.pdf-container {
+  width: 100%;
+  min-height: 100%;
+  padding: var(--spacing-lg) 0;
+  box-sizing: border-box;
+}
+
+.pdf-pages-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  transform-origin: top center;
+}

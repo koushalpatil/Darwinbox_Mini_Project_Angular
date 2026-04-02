@@ -1,0 +1,103 @@
+<div
+  [id]="'field-' + elementId"
+  class="form-field"
+  [class.form-field--required]="isRequired && !isReadOnly"
+  [style.left.px]="field.x"
+  [style.top.px]="field.y"
+  [style.width.px]="field.width"
+  [style.height.px]="field.height"
+  [title]="isReadOnly ? 'This field is read-only' : isRequired ? 'This field is required' : ''"
+  (mouseenter)="handleMouseEnter()"
+  (mouseleave)="handleMouseLeave()"
+  (mousedown)="handleMouseDown()"
+  (mouseup)="handleMouseUp()"
+  (focus)="handleFocus()"
+  (blur)="handleBlur($event)"
+>
+  @if (field.type === 'PDFSignature') {
+    <app-signature-field
+      [elementId]="elementId"
+      [fieldKey]="fieldKey"
+      [value]="value"
+      [readOnly]="isReadOnly"
+      [required]="isRequired"
+      (changed)="onFieldChanged($event)"
+    />
+  }
+
+  @if (field.type === 'PDFTextField') {
+    @if (fieldSubType === 'date') {
+      <app-date-field
+        [elementId]="elementId"
+        [fieldKey]="fieldKey"
+        [value]="value"
+        [dateFormat]="field.dateFormat || 'DD/MM/YYYY'"
+        [readOnly]="isReadOnly"
+        [required]="isRequired"
+        (changed)="onFieldChanged($event)"
+        (blurEvent)="handleBlur($event)"
+      />
+    } @else {
+      <app-text-field
+        [elementId]="elementId"
+        [fieldKey]="fieldKey"
+        [subType]="fieldSubType"
+        [value]="value"
+        [isCalculated]="isCalculated"
+        [readOnly]="isReadOnly"
+        [required]="isRequired"
+        [maxLength]="field.maxLen || undefined"
+        (changed)="handleChange($event)"
+        (blurEvent)="handleBlur($event)"
+      />
+    }
+  }
+
+  @if (field.type === 'PDFCheckBox') {
+    <app-checkbox-field
+      [elementId]="elementId"
+      [fieldKey]="fieldKey"
+      [value]="value"
+      [readOnly]="isReadOnly"
+      [required]="isRequired"
+      (changed)="onFieldChanged($event)"
+    />
+  }
+
+  @if (field.type === 'PDFRadioGroup') {
+    <app-radio-field
+      [elementId]="elementId"
+      [fieldKey]="fieldKey"
+      [field]="field"
+      [value]="value"
+      [readOnly]="isReadOnly"
+      [required]="isRequired"
+      (changed)="onFieldChanged($event)"
+    />
+  }
+
+  @if ((field.type === 'PDFOptionList' || field.type === 'PDFDropdown') && field.options) {
+    <app-dropdown-field
+      [elementId]="elementId"
+      [fieldKey]="fieldKey"
+      [field]="field"
+      [value]="value"
+      [readOnly]="isReadOnly"
+      [required]="isRequired"
+      (changed)="onFieldChanged($event)"
+    />
+  }
+
+  @if (field.type === 'PDFButton') {
+    <app-button-field
+      [elementId]="elementId"
+      [fieldKey]="fieldKey"
+      [field]="field"
+      [value]="value"
+      [jsActions]="jsActions"
+      [formData]="formData"
+      [allFields]="allFields"
+      (submitEvent)="submitEvent.emit()"
+    />
+  }
+</div>

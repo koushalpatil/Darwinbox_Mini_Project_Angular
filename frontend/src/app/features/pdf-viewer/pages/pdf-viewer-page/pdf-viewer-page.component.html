@@ -1,0 +1,27 @@
+<div class="viewer-root" [class.viewer-root--fullscreen]="pipelineComplete()">
+  @if (!pipelineComplete()) {
+    <div class="upload-section">
+      <app-upload-zone
+        [maxSizeMB]="maxSizeMB"
+        [currentStage]="currentStage()"
+        [uploadProgress]="uploadProgress()"
+        (clickEvent)="openFilePicker()"
+        (dropEvent)="onFileDrop($event)"
+      />
+    </div>
+  } @else {
+    <app-file-preview
+      [pdfFile]="pdfFile()"
+      [fields]="fields()"
+      [cleanedPdfBuffer]="renderBuffer()"
+    />
+  }
+
+  <input
+    #fileInput
+    type="file"
+    accept="application/pdf"
+    hidden
+    (change)="onFileSelected($event)"
+  />
+</div>

@@ -1,0 +1,41 @@
+<div
+  class="pdf-page"
+  [style.width.px]="containerWidth || page.width"
+  [style.height.px]="page.height * scaleFactor"
+>
+  <div
+    class="pdf-page-inner"
+    [style.width.px]="page.width"
+    [style.height.px]="page.height"
+    [style.transform]="'scale(' + scaleFactor + ')'"
+  >
+    <canvas
+      #pdfCanvas
+      class="pdf-canvas"
+      [style.width.px]="page.width"
+      [style.height.px]="page.height"
+    ></canvas>
+
+    <div
+      #textLayer
+      class="textLayer"
+      [style.width.px]="page.width"
+      [style.height.px]="page.height"
+    ></div>
+
+    <div class="fields-layer" [style.width.px]="page.width" [style.height.px]="page.height">
+      @for (field of page.fields; track field.name + '-' + page.pageNum + '-' + $index) {
+        <app-form-field
+          [field]="field"
+          [widgetIndex]="field.widgetIndex !== undefined ? field.widgetIndex : $index"
+          [value]="getFieldValue(field, $index)"
+          [formData]="formData"
+          [allFields]="allDocFields || page.fields"
+          [fieldOverrides]="fieldOverrides"
+          (fieldChange)="onFieldChangeEvent($event)"
+          (submitEvent)="submitEvent.emit()"
+        />
+      }
+    </div>
+  </div>
+</div>

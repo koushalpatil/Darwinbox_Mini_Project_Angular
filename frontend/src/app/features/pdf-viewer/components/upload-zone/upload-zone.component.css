@@ -1,0 +1,317 @@
+.upload-zone {
+  position: relative;
+  padding: var(--spacing-2xl) var(--spacing-xl);
+  border-radius: 20px;
+  background: rgba(20, 22, 30, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  overflow: hidden;
+  width: 100%;
+  max-width: 560px;
+}
+
+/* Animated gradient border */
+.upload-zone-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1.5px;
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.15), rgba(167, 139, 250, 0.08), rgba(129, 140, 248, 0.15));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: all var(--transition-normal);
+}
+
+.upload-zone:hover:not(.upload-zone--active) .upload-zone-border {
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.4), rgba(167, 139, 250, 0.25), rgba(139, 92, 246, 0.4));
+}
+
+.upload-zone:hover:not(.upload-zone--active) {
+  background: rgba(25, 27, 38, 0.7);
+  transform: translateY(-2px);
+}
+
+.upload-zone--active {
+  cursor: default;
+  background: rgba(20, 22, 30, 0.8);
+}
+
+.upload-zone--active .upload-zone-border {
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.3), rgba(167, 139, 250, 0.2), rgba(129, 140, 248, 0.3));
+}
+
+.upload-zone--hover:not(.upload-zone--active) {
+  transform: translateY(-4px) scale(1.01);
+  background: rgba(30, 32, 44, 0.8);
+}
+
+.upload-zone--hover:not(.upload-zone--active) .upload-zone-border {
+  background: linear-gradient(135deg, rgba(129, 140, 248, 0.6), rgba(167, 139, 250, 0.4), rgba(139, 92, 246, 0.6));
+}
+
+/* ── Upload progress (active state) ── */
+.upload-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xl);
+  animation: fadeIn 0.4s ease-out;
+}
+
+.progress-ring-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.progress-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.04);
+  stroke-width: 6;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke: url(#progressGradient);
+  stroke: var(--color-primary);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 326.7;
+  transition: stroke-dashoffset 600ms ease-out;
+}
+
+.progress-ring-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.progress-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-light);
+  letter-spacing: -0.02em;
+  font-family: var(--font-mono);
+}
+
+.progress-unit {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 6px;
+}
+
+/* ── Stages stepper ── */
+.stages {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 280px;
+}
+
+.stage-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stage-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-slow);
+  border: 1.5px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.stage-icon--done {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--color-success);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.stage-icon--active {
+  background: rgba(129, 140, 248, 0.12);
+  color: var(--color-primary-light);
+  border-color: rgba(129, 140, 248, 0.3);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.15);
+}
+
+.stage-icon--pulsing {
+  animation: pulse 2s infinite;
+}
+
+.stage-label {
+  font-size: 13px;
+  font-weight: 500;
+  transition: all var(--transition-slow);
+  color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stage-label--done { color: var(--color-success); }
+.stage-label--active { color: var(--color-text-light); }
+
+.stage-check {
+  color: var(--color-success);
+}
+
+.bounce-dots {
+  display: inline-flex;
+  margin-left: 2px;
+}
+
+.bounce-dot {
+  display: inline-block;
+  animation: bounce 1s infinite;
+  color: var(--color-primary-light);
+}
+
+.stage-connector-wrap {
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+}
+
+.stage-connector {
+  width: 1.5px;
+  height: 18px;
+  transition: all var(--transition-slow);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.stage-connector--done {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+/* ── Upload idle state ── */
+.upload-idle {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.upload-icon-wrap {
+  position: relative;
+  margin-bottom: var(--spacing-sm);
+}
+
+.upload-icon-bg {
+  position: absolute;
+  inset: -12px;
+  background: radial-gradient(circle, rgba(129, 140, 248, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: iconFloat 4s ease-in-out infinite;
+}
+
+.upload-icon-svg {
+  position: relative;
+  color: rgba(129, 140, 248, 0.6);
+  transition: color var(--transition-normal);
+}
+
+.upload-zone:hover:not(.upload-zone--active) .upload-icon-svg {
+  color: rgba(129, 140, 248, 0.9);
+}
+
+.upload-title {
+  font-weight: 700;
+  font-size: 20px;
+  margin: 0;
+  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 50%, #a5b4fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+}
+
+.upload-subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+}
+
+.upload-browse {
+  color: var(--color-primary-light);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  border-bottom: 1px solid rgba(129, 140, 248, 0.3);
+  padding-bottom: 1px;
+}
+
+.upload-browse:hover {
+  color: #a5b4fc;
+  border-bottom-color: rgba(165, 180, 252, 0.5);
+}
+
+.upload-meta-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.upload-meta-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  letter-spacing: 0.02em;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .upload-zone {
+    padding: var(--spacing-xl) var(--spacing-md);
+    border-radius: 16px;
+  }
+
+  .upload-title { font-size: 17px; }
+
+  .upload-meta-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .progress-ring-container {
+    width: 100px;
+    height: 100px;
+  }
+
+  .progress-value { font-size: 24px; }
+}

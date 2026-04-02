@@ -1,0 +1,60 @@
+<div id="pdf-toolbar" class="toolbar" [style.height.px]="toolbarHeight">
+  <!-- Left: File name -->
+  <div class="toolbar-section">
+    <div class="toolbar-file-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+    </div>
+    <span class="toolbar-filename" [title]="fileName">{{ fileName }}</span>
+  </div>
+
+  <!-- Center: Zoom controls -->
+  <div class="toolbar-section toolbar-zoom-group">
+    <button id="toolbar-zoom-out" title="Zoom Out (Ctrl+-)" (click)="zoomOut.emit()" class="toolbar-btn">
+      <svg width="16" height="16" stroke-width="1.8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/>
+      </svg>
+    </button>
+
+    <button class="toolbar-zoom-pill" (click)="resetZoom.emit()" title="Reset Zoom (Ctrl+0)">{{ zoom }}%</button>
+
+    <button id="toolbar-zoom-in" title="Zoom In (Ctrl+=)" (click)="zoomIn.emit()" class="toolbar-btn">
+      <svg width="16" height="16" stroke-width="1.8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Right: Actions -->
+  <div class="toolbar-section">
+    <button id="toolbar-download" title="Download PDF" (click)="download.emit()" class="toolbar-btn">
+      <svg width="16" height="16" stroke-width="1.8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+    </button>
+
+    <div class="toolbar-divider"></div>
+
+    <button id="toolbar-print" title="Print PDF" (click)="print.emit()" class="toolbar-btn">
+      <svg width="16" height="16" stroke-width="1.8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>
+      </svg>
+    </button>
+
+    <div class="toolbar-divider"></div>
+
+    <button id="toolbar-fullscreen" [title]="isFullscreen ? 'Exit Full Screen' : 'Full Screen'" (click)="toggleFullscreen()" class="toolbar-btn">
+      @if (isFullscreen) {
+        <svg width="16" height="16" stroke-width="1.8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M4 14h4v4"/><path d="M20 10h-4V6"/><path d="M14 10l7-7"/><path d="M3 21l7-7"/>
+        </svg>
+      } @else {
+        <svg width="16" height="16" stroke-width="1.8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+        </svg>
+      }
+    </button>
+  </div>
+</div>
