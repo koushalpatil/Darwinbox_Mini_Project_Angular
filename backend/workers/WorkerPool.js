@@ -1,4 +1,5 @@
 const { Worker } = require("worker_threads");
+const { WorkerError } = require("../middleware/errorClasses");
 
 class WorkerPool {
   constructor(workerPath, poolSize = 2) {
@@ -60,7 +61,7 @@ class WorkerPool {
       workerWrapper.worker.removeAllListeners("message");
       workerWrapper.busy = false;
       workerWrapper._reject = null;
-      task.reject(new Error("Worker timed out"));
+      task.reject(new WorkerError("Worker timed out", true));
       this._processQueue();
     }, task.timeoutMs);
 
@@ -70,7 +71,7 @@ class WorkerPool {
       workerWrapper._reject = null;
 
       if (result.error) {
-        task.reject(new Error(result.error));
+        task.reject(new WorkerError(result.error));
       } else {
         task.resolve(result);
       }
