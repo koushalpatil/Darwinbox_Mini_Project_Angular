@@ -7,6 +7,7 @@ import {
   ElementRef,
   effect,
   ChangeDetectionStrategy,
+  DestroyRef,
 } from '@angular/core';
 import { environment } from '../../../../../environments/environment';
 import { PdfUploadService } from '../../services/pdf-upload.service';
@@ -35,6 +36,7 @@ export class PdfViewerPageComponent {
   private extractService = inject(PdfExtractService);
   private toastService = inject(ToastService);
   private logger = inject(LoggerService);
+  private destroyRef = inject(DestroyRef);
 
   private extractionStarted = false;
 
@@ -76,6 +78,20 @@ export class PdfViewerPageComponent {
         this.startExtraction(file);
       }
     });
+
+    // Hide app header when PDF preview is active so the PDF toolbar is fully visible
+    effect(() => {
+      if (this.pipelineComplete()) {
+        document.body.classList.add('pdf-viewer-active');
+      } else {
+        document.body.classList.remove('pdf-viewer-active');
+      }
+    });
+
+    // Clean up the body class when component is destroyed
+    this.destroyRef.onDestroy(() => {
+      document.body.classList.remove('pdf-viewer-active');
+    });
   }
 
   private async startExtraction(file: { arrayBuffer: ArrayBuffer }): Promise<void> {
@@ -112,3 +128,4 @@ export class PdfViewerPageComponent {
     this.fileInputRef?.nativeElement?.click();
   }
 }
+
