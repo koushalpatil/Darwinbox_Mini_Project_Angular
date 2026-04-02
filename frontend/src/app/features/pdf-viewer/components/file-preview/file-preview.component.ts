@@ -81,7 +81,10 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // ResizeObserver initialized in loadPdf once container is ready
+    // Eagerly measure container width so the first render uses the correct width
+    if (this.containerRef?.nativeElement) {
+      this.containerWidth = this.containerRef.nativeElement.clientWidth;
+    }
   }
 
   ngOnDestroy(): void {
@@ -136,9 +139,13 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private setupResizeObserver(): void {
     if (!this.containerRef?.nativeElement) return;
+    // Set initial width synchronously before observer kicks in
+    this.containerWidth = this.containerRef.nativeElement.clientWidth;
+    this.cdr.markForCheck();
     this.resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         this.containerWidth = entry.contentRect.width;
+        this.cdr.markForCheck();
       }
     });
     this.resizeObserver.observe(this.containerRef.nativeElement);

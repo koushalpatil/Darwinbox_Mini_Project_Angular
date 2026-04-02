@@ -1,5 +1,5 @@
 .viewer-root {
-  max-width: 720px;
+  max-width: 860px;
   margin: 0 auto;
   padding: var(--spacing-2xl) var(--spacing-md);
   animation: fadeIn 0.5s ease-out;

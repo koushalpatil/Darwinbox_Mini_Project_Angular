@@ -1,5 +1,12 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 
+/** Characters allowed in a numeric field: digits, one decimal point, leading minus. */
+const ALLOWED_NUMBER_KEYS = new Set([
+  'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+  'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+  'Home', 'End',
+]);
+
 @Component({
   selector: 'app-text-field',
   standalone: true,
@@ -11,6 +18,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
       [attr.inputmode]="subType === 'number' ? 'decimal' : 'text'"
       [value]="value || ''"
       (input)="onInputChange($event)"
+      (keydown)="onKeyDown($event)"
       [readOnly]="isFieldReadOnly"
       [required]="required"
       [attr.maxlength]="maxLength || null"
@@ -72,7 +80,60 @@ export class TextFieldComponent {
     return this.readOnly || this.isCalculated;
   }
 
+  /**
+   * Block non-numeric keys at keydown for number-subtype fields.
+   * Allows: digits, one decimal point, minus at start, navigation & control keys, clipboard shortcuts.
+   */
+  onKeyDown(event: KeyboardEvent): void {
+    if (this.subType !== 'number') return;
+
+    // Always allow navigation / control keys
+    if (ALLOWED_NUMBER_KEYS.has(event.key)) return;
+
+    // Allow Ctrl/Cmd shortcuts (copy, paste, cut, select-all)
+    if (event.ctrlKey || event.metaKey) return;
+
+    const input = event.target as HTMLInputElement;
+    const currentValue = input.value;
+    const selectionStart = input.selectionStart ?? currentValue.length;
+
+    // Allow minus sign only at the beginning
+    if (event.key === '-') {
+      if (selectionStart === 0 && !currentValue.includes('-')) return;
+      event.preventDefault();
+      return;
+    }
+
+    // Allow decimal point only if one doesn't already exist
+    if (event.key === '.' || event.key === ',') {
+      if (!currentValue.includes('.') && !currentValue.includes(',')) return;
+      event.preventDefault();
+      return;
+    }
+
+    // Allow digits 0-9
+    if (/^[0-9]$/.test(event.key)) return;
+
+    // Block everything else
+    event.preventDefault();
+  }
+
+  /**
+   * On input, sanitize the value for number fields as a safety net
+   * (handles paste with non-numeric content, IME input, etc.)
+   */
   onInputChange(event: Event): void {
+    if (this.subType === 'number') {
+      const input = event.target as HTMLInputElement;
+      // Strip all characters that aren't digits, decimal point, or leading minus
+      const sanitized = input.value
+        .replace(/[^0-9.\-]/g, '')           // keep only valid chars
+        .replace(/(?!^)-/g, '')              // minus only at start
+        .replace(/(\..*)\./g, '$1');          // only one decimal point
+      if (sanitized !== input.value) {
+        input.value = sanitized;
+      }
+    }
     this.changed.emit(event);
   }
 
