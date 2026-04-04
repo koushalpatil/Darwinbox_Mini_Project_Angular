@@ -3,10 +3,6 @@ import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { ToastService } from '../../shared/services/toast.service';
 
-/**
- * Global HTTP error interceptor.
- * Catches all HTTP errors, logs them, and shows user-friendly toasts.
- */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(ToastService);
 
@@ -28,7 +24,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       console.error(`HTTP ${error.status} on ${req.method} ${req.url}`, error);
 
-      // Only show toast for non-suppressed errors
       if (!req.headers.has('X-Suppress-Toast')) {
         toast.error(userMessage);
       }

@@ -64,7 +64,6 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.zoom / 100;
   }
 
-  /** Handle keyboard shortcuts via HostListener instead of manual window listener. */
   @HostListener('window:keydown', ['$event'])
   onKeyDown(e: KeyboardEvent): void {
     if ((e.ctrlKey || e.metaKey) && (e.key === '=' || e.key === '+')) {
@@ -86,7 +85,6 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Eagerly measure container width so the first render uses the correct width
     if (this.containerRef?.nativeElement) {
       this.containerWidth = this.containerRef.nativeElement.clientWidth;
     }
@@ -203,7 +201,7 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   async handleDownload(): Promise<void> {
     if (this.pdfFile) {
-      await this.pdfDownloadService.downloadFilled(this.pdfFile, this.formData);
+      await this.pdfDownloadService.downloadFilled(this.pdfFile.name || 'document.pdf');
     }
   }
 

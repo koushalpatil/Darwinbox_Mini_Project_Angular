@@ -2,10 +2,6 @@ import { Injectable } from '@angular/core';
 import * as pdfjsLib from 'pdfjs-dist';
 import { PdfPageData, PdfField } from '../../../core/models/pdf.models';
 
-/**
- * Renders a PDF using pdf.js and maps extracted fields
- * to viewport coordinates for overlay.
- */
 @Injectable({ providedIn: 'root' })
 export class PdfRendererService {
   constructor() {
@@ -15,7 +11,6 @@ export class PdfRendererService {
     ).toString();
   }
 
-  /** Render all pages of a PDF and map field coordinates. */
   async renderPdf(cleanedPdfBuffer: ArrayBuffer, fields: PdfField[]): Promise<PdfPageData[]> {
     const bufferToRender = cleanedPdfBuffer.slice(0);
 

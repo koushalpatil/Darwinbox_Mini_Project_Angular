@@ -73,7 +73,6 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* Custom scrollbar */
 .pdf-scroll-container::-webkit-scrollbar {
   width: 8px;
 }

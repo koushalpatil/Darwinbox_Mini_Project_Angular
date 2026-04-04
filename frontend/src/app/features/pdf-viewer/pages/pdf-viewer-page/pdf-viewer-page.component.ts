@@ -16,10 +16,6 @@ import { ToastService } from '../../../../shared/services/toast.service';
 import { UploadZoneComponent } from '../../components/upload-zone/upload-zone.component';
 import { FilePreviewComponent } from '../../components/file-preview/file-preview.component';
 
-/**
- * Smart / container component that orchestrates the PDF upload → extract → preview pipeline.
- * All child components are presentational.
- */
 @Component({
   selector: 'app-pdf-viewer-page',
   standalone: true,
@@ -40,7 +36,6 @@ export class PdfViewerPageComponent {
 
   readonly maxSizeMB = environment.maxUploadSizeMB;
 
-  // Expose service signals to the template
   readonly pdfFile = this.uploadService.pdfFile;
   readonly uploadProgress = this.uploadService.uploadProgress;
   readonly currentStage = this.uploadService.uploadStage;
@@ -48,18 +43,15 @@ export class PdfViewerPageComponent {
   readonly fields = this.extractService.fields;
   readonly cleanedPdfBuffer = this.extractService.cleanedPdfBuffer;
 
-  /** The buffer to use for rendering — prefer cleaned, fall back to original. */
   readonly renderBuffer = computed(
     () => this.cleanedPdfBuffer() ?? this.pdfFile()?.arrayBuffer ?? null,
   );
 
-  /** True when upload + extraction is fully complete and preview can render. */
   readonly pipelineComplete = computed(() => {
     return !!(this.pdfFile() && this.renderBuffer() && this.currentStage() === 'done');
   });
 
   constructor() {
-    // React to errors
     effect(() => {
       const err = this.error();
       if (err) {
@@ -67,7 +59,6 @@ export class PdfViewerPageComponent {
       }
     });
 
-    // React to successful upload — start extraction
     effect(() => {
       const file = this.pdfFile();
       if (file && !this.extractionStarted) {
@@ -75,7 +66,6 @@ export class PdfViewerPageComponent {
       }
     });
 
-    // Hide app header when PDF preview is active so the PDF toolbar is fully visible
     effect(() => {
       if (this.pipelineComplete()) {
         document.body.classList.add('pdf-viewer-active');
@@ -84,7 +74,6 @@ export class PdfViewerPageComponent {
       }
     });
 
-    // Clean up the body class when component is destroyed
     this.destroyRef.onDestroy(() => {
       document.body.classList.remove('pdf-viewer-active');
     });

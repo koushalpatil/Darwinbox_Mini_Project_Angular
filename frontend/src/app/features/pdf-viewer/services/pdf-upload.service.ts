@@ -4,15 +4,10 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { PdfFileData, UploadStage } from '../../../core/models/pdf.models';
 
-/**
- * Handles PDF file upload to S3 and retrieval.
- * State is exposed via Angular signals for automatic change detection.
- */
 @Injectable({ providedIn: 'root' })
 export class PdfUploadService {
   private http = inject(HttpClient);
 
-  // ── Writable signals (private) ──
   private readonly _pdfFile = signal<PdfFileData | null>(null);
   private readonly _error = signal<string | null>(null);
   private readonly _isProcessing = signal(false);
@@ -20,7 +15,6 @@ export class PdfUploadService {
   private readonly _uploadStage = signal<UploadStage>(null);
   private readonly _s3Key = signal<string | null>(null);
 
-  // ── Public readonly signals ──
   readonly pdfFile = this._pdfFile.asReadonly();
   readonly error = this._error.asReadonly();
   readonly isProcessing = this._isProcessing.asReadonly();
@@ -28,25 +22,20 @@ export class PdfUploadService {
   readonly uploadStage = this._uploadStage.asReadonly();
   readonly s3Key = this._s3Key.asReadonly();
 
-  /** True when the upload pipeline has completed successfully. */
   readonly isComplete = computed(() => this._uploadStage() === 'done' && this._pdfFile() !== null);
 
-  /** Update the upload progress (0–100). */
   setUploadProgress(value: number): void {
     this._uploadProgress.set(value);
   }
 
-  /** Update the current upload stage. */
   setUploadStage(stage: UploadStage): void {
     this._uploadStage.set(stage);
   }
 
-  /** Clear any existing error. */
   clearError(): void {
     this._error.set(null);
   }
 
-  /** Validate a file before upload. Returns an array of error messages, empty if valid. */
   validateFile(file: File, maxSizeMB: number): string[] {
     if (!file) return ['No file selected'];
     if (file.type !== 'application/pdf') return ['Only PDF files are allowed'];
@@ -55,7 +44,6 @@ export class PdfUploadService {
     return [];
   }
 
-  /** Upload a file to S3 and retrieve it for rendering. */
   async processFile(file: File): Promise<void> {
     this._isProcessing.set(true);
     this._error.set(null);
@@ -112,7 +100,6 @@ export class PdfUploadService {
     }
   }
 
-  /** Validate and process a file. */
   handleFile(file: File, maxSizeMB: number): void {
     const errors = this.validateFile(file, maxSizeMB);
     if (errors.length) {

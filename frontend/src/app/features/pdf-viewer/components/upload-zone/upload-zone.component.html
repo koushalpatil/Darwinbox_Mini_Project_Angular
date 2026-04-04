@@ -11,19 +11,19 @@
   tabindex="0"
   [attr.aria-label]="isActive ? 'Upload in progress' : 'Upload PDF file'"
 >
-  <!-- Animated gradient border -->
   <div class="upload-zone-border"></div>
 
   @if (isActive) {
     <div class="upload-progress">
-      <!-- Circular progress indicator -->
       <div class="progress-ring-container">
         <svg class="progress-ring" viewBox="0 0 120 120">
-          <circle class="progress-ring-bg" cx="60" cy="60" r="52"/>
+          <circle class="progress-ring-bg" cx="60" cy="60" r="52" />
           <circle
             class="progress-ring-fill"
-            cx="60" cy="60" r="52"
-            [style.stroke-dashoffset]="326.7 - (326.7 * uploadProgress / 100)"
+            cx="60"
+            cy="60"
+            r="52"
+            [style.stroke-dashoffset]="326.7 - (326.7 * uploadProgress) / 100"
           />
         </svg>
         <div class="progress-ring-text">
@@ -32,7 +32,6 @@
         </div>
       </div>
 
-      <!-- Stages stepper -->
       <div class="stages">
         @for (stage of stages; track stage.key; let i = $index) {
           <div>
@@ -45,13 +44,27 @@
                 [class.stage-icon--pulsing]="i === currentIndex && currentStage !== 'completed'"
               >
                 @if (i < currentIndex) {
-                  <svg width="14" height="14" stroke-width="2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
+                  <svg
+                    width="14"
+                    height="14"
+                    stroke-width="2.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
                   </svg>
                 } @else {
-                  <svg width="14" height="14" stroke-width="2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path [attr.d]="stage.iconPath"/>
+                  <svg
+                    width="14"
+                    height="14"
+                    stroke-width="2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path [attr.d]="stage.iconPath" />
                   </svg>
                 }
               </div>
@@ -64,8 +77,16 @@
               >
                 {{ stage.label }}
                 @if (i < currentIndex) {
-                  <svg class="stage-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                    <polyline points="20 6 9 17 4 12"/>
+                  <svg
+                    class="stage-check"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
                   </svg>
                 }
                 @if (i === currentIndex && currentStage !== 'completed') {
@@ -80,10 +101,7 @@
 
             @if (i < stages.length - 1) {
               <div class="stage-connector-wrap">
-                <div
-                  class="stage-connector"
-                  [class.stage-connector--done]="i < currentIndex"
-                ></div>
+                <div class="stage-connector" [class.stage-connector--done]="i < currentIndex"></div>
               </div>
             }
           </div>
@@ -94,10 +112,18 @@
     <div class="upload-idle">
       <div class="upload-icon-wrap">
         <div class="upload-icon-bg"></div>
-        <svg class="upload-icon-svg" width="40" height="40" stroke-width="1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="17 8 12 3 7 8"/>
-          <line x1="12" y1="3" x2="12" y2="15"/>
+        <svg
+          class="upload-icon-svg"
+          width="40"
+          height="40"
+          stroke-width="1.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" y1="3" x2="12" y2="15" />
         </svg>
       </div>
 
@@ -109,24 +135,45 @@
 
       <div class="upload-meta-row">
         <div class="upload-meta-chip">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
           </svg>
           PDF only
         </div>
         <div class="upload-meta-chip">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/>
-            <line x1="12" y1="3" x2="12" y2="15"/>
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
           Max {{ maxSizeMB }}MB
         </div>
         <div class="upload-meta-chip">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>
-            <polyline points="12 12 12 21"/>
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+            <polyline points="12 12 12 21" />
           </svg>
           S3 Storage
         </div>

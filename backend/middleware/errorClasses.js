@@ -1,17 +1,4 @@
-/**
- * Custom error hierarchy for the backend API.
- *
- * All operational errors extend AppError so that the centralised
- * error-handler middleware can map them to the correct HTTP response.
- */
-
 class AppError extends Error {
-  /**
-   * @param {string}  message     Human-readable error description
-   * @param {number}  statusCode  HTTP status code (default 500)
-   * @param {string}  code        Machine-readable error code (e.g. "VALIDATION_ERROR")
-   * @param {boolean} isOperational  True = expected/recoverable error
-   */
   constructor(
     message,
     statusCode = 500,
@@ -46,10 +33,6 @@ class PayloadTooLargeError extends AppError {
 }
 
 class S3Error extends AppError {
-  /**
-   * @param {string} message
-   * @param {Error}  [cause]  Original AWS SDK error
-   */
   constructor(message = "S3 operation failed", cause) {
     super(message, 502, "S3_ERROR");
     if (cause) this.cause = cause;
@@ -57,10 +40,6 @@ class S3Error extends AppError {
 }
 
 class WorkerError extends AppError {
-  /**
-   * @param {string}  message
-   * @param {boolean} [isTimeout=false]
-   */
   constructor(message = "Worker processing failed", isTimeout = false) {
     super(message, 500, isTimeout ? "WORKER_TIMEOUT" : "WORKER_ERROR");
     this.isTimeout = isTimeout;

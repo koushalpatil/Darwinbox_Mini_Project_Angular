@@ -10,10 +10,6 @@ interface ExtractResponse {
   cleanedPdfBase64?: string;
 }
 
-/**
- * Extracts fillable fields from a PDF via the backend.
- * State is exposed via Angular signals.
- */
 @Injectable({ providedIn: 'root' })
 export class PdfExtractService {
   private http = inject(HttpClient);
@@ -30,7 +26,6 @@ export class PdfExtractService {
   readonly cleanedPdfBuffer = this._cleanedPdfBuffer.asReadonly();
   readonly documentJS = this._documentJS.asReadonly();
 
-  /** Extract fillable fields from the PDF. Returns the fields array. */
   async extractFields(file: { arrayBuffer: ArrayBuffer }): Promise<PdfField[]> {
     try {
       this._isExtracting.set(true);

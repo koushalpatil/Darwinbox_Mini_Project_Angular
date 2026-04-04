@@ -34,11 +34,6 @@ function hasScripts(jsActions: JsActions, key: string): boolean {
   return getScripts(jsActions, key).length > 0;
 }
 
-/**
- * Container component that renders a single PDF form field.
- * Delegates to the appropriate field-type component (text, checkbox, radio, etc.)
- * and handles JS action execution (calculate, keystroke, format, validate).
- */
 @Component({
   selector: 'app-form-field',
   standalone: true,
@@ -80,7 +75,6 @@ export class FormFieldComponent implements OnInit, OnChanges {
     this.computeDerivedState();
     this.runCalculateScripts();
 
-    // Replace setInterval with RxJS interval + takeUntilDestroyed for auto-cleanup
     interval(500)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.runCalculateScripts());
@@ -125,12 +119,10 @@ export class FormFieldComponent implements OnInit, OnChanges {
     }
   }
 
-  /** Forward field value changes from child components. */
   onFieldChanged(event: { key: string; value: any }): void {
     this.fieldChange.emit(event);
   }
 
-  /** Handle raw input change events (text fields with keystroke validation). */
   handleChange(e: Event): void {
     const newValue = (e.target as HTMLInputElement).value;
     const accepted = this.handleKeystroke(newValue);
@@ -139,7 +131,6 @@ export class FormFieldComponent implements OnInit, OnChanges {
     }
   }
 
-  /** Handle blur — run validate, format, and blur JS actions. */
   handleBlur(e: Event): void {
     this.handleValidate();
     this.handleFormat(e);
@@ -149,7 +140,6 @@ export class FormFieldComponent implements OnInit, OnChanges {
     }
   }
 
-  /** Handle focus — run focus JS actions. */
   handleFocus(): void {
     const focusScripts = getScripts(this.jsActions, 'Fo');
     if (focusScripts.length > 0) {
@@ -157,7 +147,6 @@ export class FormFieldComponent implements OnInit, OnChanges {
     }
   }
 
-  /** Handle mouse enter — run mouse enter JS actions. */
   handleMouseEnter(): void {
     const enterScripts = getScripts(this.jsActions, 'E');
     if (enterScripts.length > 0) {
@@ -165,7 +154,6 @@ export class FormFieldComponent implements OnInit, OnChanges {
     }
   }
 
-  /** Handle mouse leave — run mouse exit JS actions. */
   handleMouseLeave(): void {
     const exitScripts = getScripts(this.jsActions, 'X');
     if (exitScripts.length > 0) {
@@ -173,7 +161,6 @@ export class FormFieldComponent implements OnInit, OnChanges {
     }
   }
 
-  /** Handle mouse down — run mouse down JS actions. */
   handleMouseDown(): void {
     const downScripts = getScripts(this.jsActions, 'D');
     if (downScripts.length > 0) {
@@ -181,7 +168,6 @@ export class FormFieldComponent implements OnInit, OnChanges {
     }
   }
 
-  /** Handle mouse up — run mouse up JS actions. */
   handleMouseUp(): void {
     const upScripts = getScripts(this.jsActions, 'U');
     if (upScripts.length > 0) {

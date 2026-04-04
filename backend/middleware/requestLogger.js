@@ -1,11 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
 
-/**
- * Attach a unique request ID and log request lifecycle.
- *
- * - Inbound:  logs method + URL + requestId
- * - Outbound: logs statusCode + duration
- */
 function requestLogger(req, res, next) {
   const id = uuidv4();
   req.requestId = id;

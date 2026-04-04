@@ -15,11 +15,6 @@ import { TextLayer } from 'pdfjs-dist';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { PdfPageData, PdfField, FieldOverrides } from '../../../../core/models/pdf.models';
 
-/**
- * Renders a single PDF page using a canvas element,
- * overlays a text layer for selection, and positions
- * form field components on top.
- */
 @Component({
   selector: 'app-pdf-page',
   standalone: true,
@@ -42,7 +37,6 @@ export class PdfPageComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   private renderTask: any = null;
 
-  /** Compute scale factor to fit page within container width. */
   get scaleFactor(): number {
     return this.containerWidth > 0 ? this.containerWidth / this.page.width : 1;
   }
@@ -66,7 +60,6 @@ export class PdfPageComponent implements AfterViewInit, OnDestroy, OnChanges {
     }
   }
 
-  /** Render the PDF page to canvas and overlay the text layer. */
   private async renderPage(): Promise<void> {
     if (!this.page?.pdfPage || !this.canvasRef?.nativeElement || !this.textLayerRef?.nativeElement)
       return;
@@ -111,7 +104,6 @@ export class PdfPageComponent implements AfterViewInit, OnDestroy, OnChanges {
     }
   }
 
-  /** Get the current value for a given field from the form data map. */
   getFieldValue(field: PdfField, idx: number): any {
     const wIdx = field.widgetIndex !== undefined ? field.widgetIndex : idx;
     const specificKey =

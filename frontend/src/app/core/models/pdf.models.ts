@@ -1,6 +1,3 @@
-/* ── PDF.models — Shared type definitions ── */
-
-/** Metadata returned by the upload API + the raw bytes for rendering. */
 export interface PdfFileData {
   name: string;
   size: number;
@@ -10,7 +7,6 @@ export interface PdfFileData {
   s3Key: string;
 }
 
-/** A single field extracted from the PDF (backend response). */
 export interface PdfField {
   name: string;
   type: string;
@@ -36,23 +32,21 @@ export interface PdfFieldOption {
   exportValue?: string;
 }
 
-/** JS action scripts keyed by Acrobat trigger codes. */
 export interface JsActions {
-  /** Calculate */ C?: string | string[];
-  /** Keystroke */ K?: string | string[];
-  /** Format */ F?: string | string[];
-  /** Validate */ V?: string | string[];
-  /** Focus */ Fo?: string | string[];
-  /** Blur */ Bl?: string | string[];
-  /** Mouse Enter */ E?: string | string[];
-  /** Mouse Exit */ X?: string | string[];
-  /** Mouse Down */ D?: string | string[];
-  /** Mouse Up */ U?: string | string[];
-  /** Action */ A?: string | string[];
+  C?: string | string[];
+  K?: string | string[];
+  F?: string | string[];
+  V?: string | string[];
+  Fo?: string | string[];
+  Bl?: string | string[];
+  E?: string | string[];
+  X?: string | string[];
+  D?: string | string[];
+  U?: string | string[];
+  A?: string | string[];
   [key: string]: string | string[] | undefined;
 }
 
-/** Per-field runtime overrides (readOnly / required set via JS). */
 export interface FieldOverrides {
   [fieldName: string]: {
     readOnly?: boolean;
@@ -60,17 +54,15 @@ export interface FieldOverrides {
   };
 }
 
-/** Rendered page data produced by PdfRendererService. */
 export interface PdfPageData {
   pageNum: number;
-  pdfPage: any; // pdfjs-dist PDFPageProxy
-  viewport: any; // pdfjs-dist PageViewport
+  pdfPage: any;
+  viewport: any;
   width: number;
   height: number;
   fields: PdfField[];
 }
 
-/** Upload pipeline stages shown in the upload-zone stepper. */
 export type UploadStage =
   | 'uploading_to_s3'
   | 'retrieving_from_s3'
