@@ -24,6 +24,7 @@ const {
   validateFileKey,
   validateExtractBody,
 } = require("./middleware/validators");
+const { fillPdf } = require("./utils/pdf/pdfFiller");
 
 const PORT = process.env.PORT || 5000;
 const BUCKET = process.env.S3_BUCKET_NAME;
@@ -198,6 +199,39 @@ app.post(
       documentJS: jsResult.documentJS,
       cleanedPdfBase64: cleanResult.cleanedPdfBase64,
     });
+  }),
+);
+
+app.post(
+  "/api/fill-pdf",
+  asyncHandler(async (req, res) => {
+    const { pdfBuffer, fieldValues } = req.body;
+
+    if (!pdfBuffer || typeof pdfBuffer !== "string") {
+      return res
+        .status(400)
+        .json({
+          error: "Missing or invalid pdfBuffer (expected base64 string)",
+        });
+    }
+    if (!fieldValues || typeof fieldValues !== "object") {
+      return res.status(400).json({ error: "Missing or invalid fieldValues" });
+    }
+
+    const rawBuffer = Buffer.from(pdfBuffer, "base64");
+    const sizeKB = (rawBuffer.length / 1024).toFixed(1);
+    console.log(
+      `Filling PDF (${sizeKB} KB) with ${Object.keys(fieldValues).length} field values`,
+    );
+
+    const filledBuffer = await fillPdf(rawBuffer, fieldValues);
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Length": filledBuffer.length,
+      "Content-Disposition": 'attachment; filename="filled.pdf"',
+    });
+    res.send(filledBuffer);
   }),
 );
 

@@ -200,8 +200,13 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async handleDownload(): Promise<void> {
-    if (this.pdfFile) {
-      await this.pdfDownloadService.downloadFilled(this.pdfFile.name || 'document.pdf');
+    if (this.pdfFile?.arrayBuffer) {
+      await this.pdfDownloadService.downloadFilled(
+        this.pdfFile.arrayBuffer,
+        this.formData,
+        this.fields,
+        this.pdfFile.name || 'document.pdf',
+      );
     }
   }
 
