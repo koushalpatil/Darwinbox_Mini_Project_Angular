@@ -1,9 +1,26 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  forwardRef,
+  inject,
+} from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-date-field',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => DateFieldComponent),
+      multi: true,
+    },
+  ],
   template: `
     <div
       class="date-wrap"
@@ -21,7 +38,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
         class="date-input"
         [class.date-input--readonly]="readOnly"
         (focus)="onFocus($event)"
-        (blur)="blurEvent.emit($event)"
+        (blur)="onBlur($event)"
       />
       @if (!readOnly) {
         <div class="calendar-icon-wrap">
@@ -131,15 +148,32 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
     `,
   ],
 })
-export class DateFieldComponent {
+export class DateFieldComponent implements ControlValueAccessor {
   @Input() elementId = '';
   @Input() fieldKey = '';
-  @Input() value: any;
   @Input() dateFormat = 'DD/MM/YYYY';
   @Input() readOnly = false;
   @Input() required = false;
-  @Output() changed = new EventEmitter<{ key: string; value: string }>();
   @Output() blurEvent = new EventEmitter<Event>();
+
+  value: any;
+
+  private cdr = inject(ChangeDetectorRef);
+  private onChange: (val: any) => void = () => {};
+  private onTouched: () => void = () => {};
+
+  writeValue(val: any): void {
+    this.value = val ?? '';
+    this.cdr.markForCheck();
+  }
+
+  registerOnChange(fn: (val: any) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
 
   get sep(): string {
     const match = this.dateFormat.match(/[/\-.]/);
@@ -157,12 +191,14 @@ export class DateFieldComponent {
     if (raw.length > 0) formatted = raw.substring(0, 2);
     if (raw.length > 2) formatted += this.sep + raw.substring(2, 4);
     if (raw.length > 4) formatted += this.sep + raw.substring(4, 8);
-    this.changed.emit({ key: this.fieldKey, value: formatted });
+    this.value = formatted;
+    this.onChange(this.value);
   }
 
   onPickerChange(e: Event): void {
     const htmlValue = (e.target as HTMLInputElement).value;
-    this.changed.emit({ key: this.fieldKey, value: this.fromPickerValue(htmlValue) });
+    this.value = this.fromPickerValue(htmlValue);
+    this.onChange(this.value);
   }
 
   private fromPickerValue(htmlValue: string): string {
@@ -175,4 +211,9 @@ export class DateFieldComponent {
   }
 
   onFocus(e: FocusEvent): void {}
+
+  onBlur(e: FocusEvent): void {
+    this.onTouched();
+    this.blurEvent.emit(e);
+  }
 }

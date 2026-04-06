@@ -11,6 +11,7 @@ import {
   HostListener,
   inject,
 } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
 import { PdfRendererService } from '../../services/pdf-renderer.service';
 import { PdfDownloadService } from '../../services/pdf-download.service';
 
@@ -47,7 +48,7 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   pdfPages: PdfPageData[] = [];
   loading = true;
   error: any = null;
-  formData: Record<string, any> = {};
+  pdfForm = new FormGroup<Record<string, FormControl>>({});
   zoom = ZOOM_DEFAULT;
   fieldOverrides: FieldOverrides = {};
   containerWidth = 0;
@@ -62,6 +63,10 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   get zoomScale(): number {
     return this.zoom / 100;
+  }
+
+  get formData(): Record<string, any> {
+    return this.pdfForm.getRawValue();
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -79,7 +84,7 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.initFormData();
+    this.initFormGroup();
     this.setupFieldOverrides();
     this.loadPdf();
   }
@@ -97,25 +102,46 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     delete (window as any).pdfForm;
   }
 
-  private initFormData(): void {
+  private initFormGroup(): void {
     if (!this.fields?.length) return;
 
-    const initialData: Record<string, any> = {};
+    const controls: Record<string, FormControl> = {};
+
     this.fields.forEach((field) => {
-      if (field.value !== undefined && field.value !== null) {
-        initialData[field.name] = field.value;
-        if (field.type === 'PDFRadioGroup') {
-          initialData[`${field.name}-page-${field.page}`] = field.value;
-        } else {
-          const widgetIdx = field.widgetIndex !== undefined ? field.widgetIndex : 0;
-          initialData[`${field.name}-page-${field.page}-w${widgetIdx}`] = field.value;
+      const initialValue = field.value !== undefined && field.value !== null ? field.value : '';
+
+      if (field.type === 'PDFRadioGroup') {
+        const specificKey = `${field.name}-page-${field.page}`;
+        if (!controls[specificKey]) {
+          controls[specificKey] = new FormControl(initialValue);
         }
+      } else {
+        const widgetIdx = field.widgetIndex !== undefined ? field.widgetIndex : 0;
+        const specificKey = `${field.name}-page-${field.page}-w${widgetIdx}`;
+        if (!controls[specificKey]) {
+          controls[specificKey] = new FormControl(initialValue);
+        }
+      }
+
+      if (!controls[field.name]) {
+        controls[field.name] = new FormControl(initialValue);
       }
     });
 
-    if (Object.keys(initialData).length > 0) {
-      this.formData = { ...initialData, ...this.formData };
-    }
+    this.pdfForm = new FormGroup(controls);
+
+    this.pdfForm.valueChanges.subscribe((values) => {
+      for (const key of Object.keys(values)) {
+        const bareMatch = key.match(/^(.+?)-page-/);
+        if (bareMatch) {
+          const bareName = bareMatch[1];
+          const bareControl = this.pdfForm.get(bareName);
+          if (bareControl && bareControl.value !== values[key]) {
+            bareControl.setValue(values[key], { emitEvent: false });
+          }
+        }
+      }
+    });
   }
 
   private setupFieldOverrides(): void {
@@ -142,7 +168,6 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private setupResizeObserver(): void {
     if (!this.containerRef?.nativeElement) return;
-    // Set initial width synchronously before observer kicks in
     this.containerWidth = this.containerRef.nativeElement.clientWidth;
     this.cdr.markForCheck();
     this.resizeObserver = new ResizeObserver((entries) => {
@@ -174,17 +199,8 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  handleFieldChange(event: { key: string; value: any }): void {
-    const updated = { ...this.formData, [event.key]: event.value };
-    const bareMatch = event.key.match(/^(.+?)-page-/);
-    if (bareMatch) {
-      updated[bareMatch[1]] = event.value;
-    }
-    this.formData = updated;
-  }
-
   handleSubmit(): void {
-    console.log('Form submitted', this.formData);
+    console.log('Form submitted', this.pdfForm.value);
   }
 
   handleZoomIn(): void {
@@ -203,7 +219,7 @@ export class FilePreviewComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.pdfFile?.arrayBuffer) {
       await this.pdfDownloadService.downloadFilled(
         this.pdfFile.arrayBuffer,
-        this.formData,
+        this.pdfForm.getRawValue(),
         this.fields,
         this.pdfFile.name || 'document.pdf',
       );

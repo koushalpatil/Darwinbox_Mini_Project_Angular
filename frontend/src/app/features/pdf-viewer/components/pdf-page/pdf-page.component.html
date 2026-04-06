@@ -28,11 +28,10 @@
         <app-form-field
           [field]="field"
           [widgetIndex]="field.widgetIndex !== undefined ? field.widgetIndex : $index"
-          [value]="getFieldValue(field, $index)"
-          [formData]="formData"
+          [control]="getFieldControl(field, $index)"
+          [pdfForm]="pdfForm"
           [allFields]="allDocFields || page.fields"
           [fieldOverrides]="fieldOverrides"
-          (fieldChange)="onFieldChangeEvent($event)"
           (submitEvent)="submitEvent.emit()"
         />
       }

@@ -11,6 +11,7 @@ import {
   SimpleChanges,
   ChangeDetectionStrategy,
 } from '@angular/core';
+import { FormGroup, FormControl } from '@angular/forms';
 import { TextLayer } from 'pdfjs-dist';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { PdfPageData, PdfField, FieldOverrides } from '../../../../core/models/pdf.models';
@@ -26,10 +27,9 @@ import { PdfPageData, PdfField, FieldOverrides } from '../../../../core/models/p
 export class PdfPageComponent implements AfterViewInit, OnDestroy, OnChanges {
   @Input() page!: PdfPageData;
   @Input() containerWidth = 0;
-  @Input() formData: Record<string, any> = {};
+  @Input() pdfForm!: FormGroup;
   @Input() allDocFields: PdfField[] = [];
   @Input() fieldOverrides: FieldOverrides = {};
-  @Output() fieldChange = new EventEmitter<{ key: string; value: any }>();
   @Output() submitEvent = new EventEmitter<void>();
 
   @ViewChild('pdfCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -104,20 +104,12 @@ export class PdfPageComponent implements AfterViewInit, OnDestroy, OnChanges {
     }
   }
 
-  getFieldValue(field: PdfField, idx: number): any {
+  getFieldControl(field: PdfField, idx: number): FormControl {
     const wIdx = field.widgetIndex !== undefined ? field.widgetIndex : idx;
     const specificKey =
       field.type === 'PDFRadioGroup'
         ? `${field.name}-page-${field.page}`
         : `${field.name}-page-${field.page}-w${wIdx}`;
-    const genericKey = field.name;
-    const specificValue = this.formData[specificKey];
-    const genericValue = this.formData[genericKey];
-    return specificValue !== undefined ? specificValue : genericValue;
-  }
-
-  /** Forward field change events from child form-field components. */
-  onFieldChangeEvent(event: { key: string; value: any }): void {
-    this.fieldChange.emit(event);
+    return (this.pdfForm.get(specificKey) as FormControl) || new FormControl('');
   }
 }

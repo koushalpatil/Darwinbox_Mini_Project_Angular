@@ -7,9 +7,11 @@ import {
   OnChanges,
   SimpleChanges,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   DestroyRef,
   inject,
 } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
 import { executeJSAction } from '../../utils/js-executor';
@@ -39,6 +41,7 @@ function hasScripts(jsActions: JsActions, key: string): boolean {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ReactiveFormsModule,
     TextFieldComponent,
     CheckboxFieldComponent,
     RadioFieldComponent,
@@ -53,11 +56,10 @@ function hasScripts(jsActions: JsActions, key: string): boolean {
 export class FormFieldComponent implements OnInit, OnChanges {
   @Input() field!: PdfField;
   @Input() widgetIndex = 0;
-  @Input() value: any;
-  @Input() formData: Record<string, any> = {};
+  @Input() control!: FormControl;
+  @Input() pdfForm!: FormGroup;
   @Input() allFields: PdfField[] = [];
   @Input() fieldOverrides: FieldOverrides = {};
-  @Output() fieldChange = new EventEmitter<{ key: string; value: any }>();
   @Output() submitEvent = new EventEmitter<void>();
 
   fieldKey = '';
@@ -70,6 +72,15 @@ export class FormFieldComponent implements OnInit, OnChanges {
 
   private prevCalcValue: any = undefined;
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
+
+  get value(): any {
+    return this.control?.value;
+  }
+
+  get formData(): Record<string, any> {
+    return this.pdfForm?.getRawValue() || {};
+  }
 
   ngOnInit(): void {
     this.computeDerivedState();
@@ -78,13 +89,16 @@ export class FormFieldComponent implements OnInit, OnChanges {
     interval(500)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.runCalculateScripts());
+
+    if (this.isCalculated && this.pdfForm) {
+      this.pdfForm.valueChanges
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => this.runCalculateScripts());
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.computeDerivedState();
-    if (changes['formData'] || changes['value']) {
-      this.runCalculateScripts();
-    }
   }
 
   private computeDerivedState(): void {
@@ -107,27 +121,19 @@ export class FormFieldComponent implements OnInit, OnChanges {
   private runCalculateScripts(): void {
     const calculateScripts = getScripts(this.jsActions, 'C');
     if (calculateScripts.length === 0) return;
-    const result = executeJSAction(
-      calculateScripts,
-      this.value,
-      this.formData || {},
-      this.allFields,
-    );
+    const result = executeJSAction(calculateScripts, this.value, this.formData, this.allFields);
     if (result.value !== null && result.value !== this.prevCalcValue) {
       this.prevCalcValue = result.value;
-      this.fieldChange.emit({ key: this.fieldKey, value: result.value });
+      this.control.setValue(result.value, { emitEvent: false });
+      this.cdr.markForCheck();
     }
-  }
-
-  onFieldChanged(event: { key: string; value: any }): void {
-    this.fieldChange.emit(event);
   }
 
   handleChange(e: Event): void {
     const newValue = (e.target as HTMLInputElement).value;
     const accepted = this.handleKeystroke(newValue);
     if (accepted !== null) {
-      this.fieldChange.emit({ key: this.fieldKey, value: accepted });
+      this.control.setValue(accepted, { emitEvent: true });
     }
   }
 
@@ -136,54 +142,49 @@ export class FormFieldComponent implements OnInit, OnChanges {
     this.handleFormat(e);
     const blurScripts = getScripts(this.jsActions, 'Bl');
     if (blurScripts.length > 0) {
-      executeJSAction(blurScripts, this.value, this.formData || {}, this.allFields);
+      executeJSAction(blurScripts, this.value, this.formData, this.allFields);
     }
   }
 
   handleFocus(): void {
     const focusScripts = getScripts(this.jsActions, 'Fo');
     if (focusScripts.length > 0) {
-      executeJSAction(focusScripts, this.value, this.formData || {}, this.allFields);
+      executeJSAction(focusScripts, this.value, this.formData, this.allFields);
     }
   }
 
   handleMouseEnter(): void {
     const enterScripts = getScripts(this.jsActions, 'E');
     if (enterScripts.length > 0) {
-      executeJSAction(enterScripts, this.value, this.formData || {}, this.allFields);
+      executeJSAction(enterScripts, this.value, this.formData, this.allFields);
     }
   }
 
   handleMouseLeave(): void {
     const exitScripts = getScripts(this.jsActions, 'X');
     if (exitScripts.length > 0) {
-      executeJSAction(exitScripts, this.value, this.formData || {}, this.allFields);
+      executeJSAction(exitScripts, this.value, this.formData, this.allFields);
     }
   }
 
   handleMouseDown(): void {
     const downScripts = getScripts(this.jsActions, 'D');
     if (downScripts.length > 0) {
-      executeJSAction(downScripts, this.value, this.formData || {}, this.allFields);
+      executeJSAction(downScripts, this.value, this.formData, this.allFields);
     }
   }
 
   handleMouseUp(): void {
     const upScripts = getScripts(this.jsActions, 'U');
     if (upScripts.length > 0) {
-      executeJSAction(upScripts, this.value, this.formData || {}, this.allFields);
+      executeJSAction(upScripts, this.value, this.formData, this.allFields);
     }
   }
 
   private handleKeystroke(newValue: string): string | null {
     const keystrokeScripts = getScripts(this.jsActions, 'K');
     if (keystrokeScripts.length > 0) {
-      const result = executeJSAction(
-        keystrokeScripts,
-        newValue,
-        this.formData || {},
-        this.allFields,
-      );
+      const result = executeJSAction(keystrokeScripts, newValue, this.formData, this.allFields);
       if (!result.rc) return null;
       if (result.value !== null) return result.value;
     }
@@ -193,14 +194,9 @@ export class FormFieldComponent implements OnInit, OnChanges {
   private handleFormat(e: Event): void {
     const formatScripts = getScripts(this.jsActions, 'F');
     if (formatScripts.length > 0) {
-      const result = executeJSAction(
-        formatScripts,
-        this.value,
-        this.formData || {},
-        this.allFields,
-      );
+      const result = executeJSAction(formatScripts, this.value, this.formData, this.allFields);
       if (result.value !== null && result.value !== this.value) {
-        this.fieldChange.emit({ key: this.fieldKey, value: result.value });
+        this.control.setValue(result.value, { emitEvent: true });
       }
     }
     if (e?.target) {
@@ -213,17 +209,12 @@ export class FormFieldComponent implements OnInit, OnChanges {
     const validateScripts = getScripts(this.jsActions, 'V');
     if (validateScripts.length === 0) return true;
 
-    const result = executeJSAction(
-      validateScripts,
-      this.value,
-      this.formData || {},
-      this.allFields,
-    );
+    const result = executeJSAction(validateScripts, this.value, this.formData, this.allFields);
 
     if (!result.rc) return false;
 
     if (result.value !== null && result.value !== this.value) {
-      this.fieldChange.emit({ key: this.fieldKey, value: result.value });
+      this.control.setValue(result.value, { emitEvent: true });
     }
 
     return true;

@@ -18,10 +18,9 @@
     <app-signature-field
       [elementId]="elementId"
       [fieldKey]="fieldKey"
-      [value]="value"
+      [formControl]="control"
       [readOnly]="isReadOnly"
       [required]="isRequired"
-      (changed)="onFieldChanged($event)"
     />
   }
 
@@ -30,11 +29,10 @@
       <app-date-field
         [elementId]="elementId"
         [fieldKey]="fieldKey"
-        [value]="value"
+        [formControl]="control"
         [dateFormat]="field.dateFormat || 'DD/MM/YYYY'"
         [readOnly]="isReadOnly"
         [required]="isRequired"
-        (changed)="onFieldChanged($event)"
         (blurEvent)="handleBlur($event)"
       />
     } @else {
@@ -42,12 +40,11 @@
         [elementId]="elementId"
         [fieldKey]="fieldKey"
         [subType]="fieldSubType"
-        [value]="value"
+        [formControl]="control"
         [isCalculated]="isCalculated"
         [readOnly]="isReadOnly"
         [required]="isRequired"
         [maxLength]="field.maxLen || undefined"
-        (changed)="handleChange($event)"
         (blurEvent)="handleBlur($event)"
       />
     }
@@ -57,10 +54,9 @@
     <app-checkbox-field
       [elementId]="elementId"
       [fieldKey]="fieldKey"
-      [value]="value"
+      [formControl]="control"
       [readOnly]="isReadOnly"
       [required]="isRequired"
-      (changed)="onFieldChanged($event)"
     />
   }
 
@@ -69,10 +65,9 @@
       [elementId]="elementId"
       [fieldKey]="fieldKey"
       [field]="field"
-      [value]="value"
+      [formControl]="control"
       [readOnly]="isReadOnly"
       [required]="isRequired"
-      (changed)="onFieldChanged($event)"
     />
   }
 
@@ -81,10 +76,9 @@
       [elementId]="elementId"
       [fieldKey]="fieldKey"
       [field]="field"
-      [value]="value"
+      [formControl]="control"
       [readOnly]="isReadOnly"
       [required]="isRequired"
-      (changed)="onFieldChanged($event)"
     />
   }
 

@@ -1,4 +1,14 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  forwardRef,
+  inject,
+} from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 const ALLOWED_NUMBER_KEYS = new Set([
   'Backspace',
@@ -18,6 +28,13 @@ const ALLOWED_NUMBER_KEYS = new Set([
   selector: 'app-text-field',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => TextFieldComponent),
+      multi: true,
+    },
+  ],
   template: `
     <input
       [id]="'input-' + subType + '-' + elementId"
@@ -36,7 +53,7 @@ const ALLOWED_NUMBER_KEYS = new Set([
       class="text-input"
       [class.text-input--readonly]="isFieldReadOnly"
       (focus)="onFocus($event)"
-      (blur)="blurEvent.emit($event)"
+      (blur)="onBlur($event)"
     />
   `,
   styles: [
@@ -77,17 +94,34 @@ const ALLOWED_NUMBER_KEYS = new Set([
     `,
   ],
 })
-export class TextFieldComponent {
+export class TextFieldComponent implements ControlValueAccessor {
   @Input() elementId = '';
   @Input() fieldKey = '';
   @Input() subType = 'text';
-  @Input() value: any = '';
   @Input() isCalculated = false;
   @Input() readOnly = false;
   @Input() required = false;
   @Input() maxLength?: number;
-  @Output() changed = new EventEmitter<Event>();
   @Output() blurEvent = new EventEmitter<Event>();
+
+  value: any = '';
+
+  private cdr = inject(ChangeDetectorRef);
+  private onChange: (val: any) => void = () => {};
+  private onTouched: () => void = () => {};
+
+  writeValue(val: any): void {
+    this.value = val ?? '';
+    this.cdr.markForCheck();
+  }
+
+  registerOnChange(fn: (val: any) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
 
   get isFieldReadOnly(): boolean {
     return this.readOnly || this.isCalculated;
@@ -122,8 +156,8 @@ export class TextFieldComponent {
   }
 
   onInputChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
     if (this.subType === 'number') {
-      const input = event.target as HTMLInputElement;
       const sanitized = input.value
         .replace(/[^0-9.\-]/g, '')
         .replace(/(?!^)-/g, '')
@@ -132,8 +166,14 @@ export class TextFieldComponent {
         input.value = sanitized;
       }
     }
-    this.changed.emit(event);
+    this.value = input.value;
+    this.onChange(this.value);
   }
 
   onFocus(e: FocusEvent): void {}
+
+  onBlur(e: FocusEvent): void {
+    this.onTouched();
+    this.blurEvent.emit(e);
+  }
 }

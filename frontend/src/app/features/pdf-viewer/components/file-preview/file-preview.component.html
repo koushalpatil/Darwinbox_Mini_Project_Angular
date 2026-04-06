@@ -15,18 +15,32 @@
 } @else if (error) {
   <div class="preview-state preview-error">
     <div class="error-icon-wrap">
-      <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="15" y1="9" x2="9" y2="15"/>
-        <line x1="9" y1="9" x2="15" y2="15"/>
+      <svg
+        width="40"
+        height="40"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        viewBox="0 0 24 24"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="15" y1="9" x2="9" y2="15" />
+        <line x1="9" y1="9" x2="15" y2="15" />
       </svg>
     </div>
     <p class="error-title">Failed to render PDF</p>
     <p class="error-message">{{ error.message }}</p>
     <button class="retry-btn" (click)="loadPdf()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 12a9 9 0 1 1 3 6.7"/>
-        <polyline points="3 7 3 13 9 13"/>
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M3 12a9 9 0 1 1 3 6.7" />
+        <polyline points="3 7 3 13 9 13" />
       </svg>
       Try Again
     </button>
@@ -43,10 +57,9 @@
           <app-pdf-page
             [page]="page"
             [containerWidth]="containerWidth"
-            [formData]="formData"
+            [pdfForm]="pdfForm"
             [allDocFields]="fields"
             [fieldOverrides]="fieldOverrides"
-            (fieldChange)="handleFieldChange($event)"
             (submitEvent)="handleSubmit()"
           />
         }

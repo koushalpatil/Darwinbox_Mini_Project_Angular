@@ -10,10 +10,6 @@ export class PdfDownloadService {
   private http = inject(HttpClient);
   private toast = inject(ToastService);
 
-  /**
-   * Sends the original PDF buffer and user-filled values to the backend,
-   * which injects values via pdf-lib and returns the filled PDF for download.
-   */
   async downloadFilled(
     arrayBuffer: ArrayBuffer,
     formData: Record<string, any>,
