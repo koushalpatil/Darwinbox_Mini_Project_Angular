@@ -1,6 +1,7 @@
 import {
   Component,
   Input,
+  CUSTOM_ELEMENTS_SCHEMA,
   Output,
   EventEmitter,
   OnInit,
@@ -40,6 +41,7 @@ function hasScripts(jsActions: JsActions, key: string): boolean {
   selector: 'app-form-field',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     ReactiveFormsModule,
     TextFieldComponent,

@@ -205,14 +205,12 @@ app.post(
 app.post(
   "/api/fill-pdf",
   asyncHandler(async (req, res) => {
-    const { pdfBuffer, fieldValues } = req.body;
+    const { pdfBuffer, fieldValues, signatureFields } = req.body;
 
     if (!pdfBuffer || typeof pdfBuffer !== "string") {
-      return res
-        .status(400)
-        .json({
-          error: "Missing or invalid pdfBuffer (expected base64 string)",
-        });
+      return res.status(400).json({
+        error: "Missing or invalid pdfBuffer (expected base64 string)",
+      });
     }
     if (!fieldValues || typeof fieldValues !== "object") {
       return res.status(400).json({ error: "Missing or invalid fieldValues" });
@@ -220,11 +218,18 @@ app.post(
 
     const rawBuffer = Buffer.from(pdfBuffer, "base64");
     const sizeKB = (rawBuffer.length / 1024).toFixed(1);
+    const sigCount = Array.isArray(signatureFields)
+      ? signatureFields.length
+      : 0;
     console.log(
-      `Filling PDF (${sizeKB} KB) with ${Object.keys(fieldValues).length} field values`,
+      `Filling PDF (${sizeKB} KB) with ${Object.keys(fieldValues).length} field values and ${sigCount} signature(s)`,
     );
 
-    const filledBuffer = await fillPdf(rawBuffer, fieldValues);
+    const filledBuffer = await fillPdf(
+      rawBuffer,
+      fieldValues,
+      Array.isArray(signatureFields) ? signatureFields : [],
+    );
 
     res.set({
       "Content-Type": "application/pdf",

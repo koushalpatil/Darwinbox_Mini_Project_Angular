@@ -20,8 +20,9 @@ export class PdfDownloadService {
       this.toast.success('Preparing PDF…');
 
       const fieldValues = this.buildFieldValues(formData, fields);
+      const signatureFields = this.buildSignatureFields(formData, fields);
 
-      if (Object.keys(fieldValues).length === 0) {
+      if (Object.keys(fieldValues).length === 0 && signatureFields.length === 0) {
         this.toast.error('No field values to fill');
         return;
       }
@@ -31,7 +32,7 @@ export class PdfDownloadService {
       const filledPdf = await firstValueFrom(
         this.http.post(
           `${environment.apiBase}/fill-pdf`,
-          { pdfBuffer, fieldValues },
+          { pdfBuffer, fieldValues, signatureFields },
           {
             responseType: 'arraybuffer',
           },
@@ -74,6 +75,56 @@ export class PdfDownloadService {
     }
 
     return fieldValues;
+  }
+
+  private buildSignatureFields(
+    formData: Record<string, any>,
+    fields: PdfField[],
+  ): {
+    name: string;
+    value: string;
+    page: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }[] {
+    const result: {
+      name: string;
+      value: string;
+      page: number;
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    }[] = [];
+    const processed = new Set<string>();
+
+    for (const field of fields) {
+      if (field.type !== 'PDFSignature') continue;
+
+      const bareName = field.name;
+      const compositeKey = `${bareName}-page-${field.page}-w${field.widgetIndex ?? 0}`;
+
+      const sigValue = formData[bareName] ?? formData[compositeKey];
+      if (!sigValue || typeof sigValue !== 'string') continue;
+
+      const fieldId = `${bareName}-${field.page}-${field.widgetIndex ?? 0}`;
+      if (processed.has(fieldId)) continue;
+      processed.add(fieldId);
+
+      result.push({
+        name: bareName,
+        value: sigValue,
+        page: field.page,
+        x: field.x,
+        y: field.y,
+        width: field.width,
+        height: field.height,
+      });
+    }
+
+    return result;
   }
 
   private arrayBufferToBase64(buffer: ArrayBuffer): string {
