@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF File Preview — Web Component Demo</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #0a0b10;
+        color: #e8eaed;
+      }
+      .demo-header {
+        text-align: center;
+        padding: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .demo-header h1 {
+        font-size: 20px;
+        margin: 0 0 8px;
+      }
+      .demo-header p {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 14px;
+        margin: 0;
+      }
+      .demo-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 16px;
+      }
+      .demo-controls input[type='file'] {
+        display: none;
+      }
+      .demo-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: 1px solid rgba(99, 102, 241, 0.4);
+        background: rgba(99, 102, 241, 0.1);
+        color: #818cf8;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .demo-btn:hover {
+        background: rgba(99, 102, 241, 0.2);
+        border-color: rgba(99, 102, 241, 0.6);
+      }
+      #status {
+        padding: 8px 16px;
+        text-align: center;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-header">
+      <h1>&lt;pdf-file-preview&gt; Web Component Demo</h1>
+      <p>Select a PDF file to preview using the custom element.</p>
+    </div>
+
+    <div class="demo-controls">
+      <label class="demo-btn" for="pdf-input">
+        <svg
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" y1="3" x2="12" y2="15" />
+        </svg>
+        Choose PDF
+        <input type="file" id="pdf-input" accept=".pdf" />
+      </label>
+    </div>
+
+    <div id="status">No file loaded.</div>
+    <div id="preview-container"></div>
+
+    <script type="module" src="pdf-file-preview.js"></script>
+
+    <script type="module">
+      const input = document.getElementById('pdf-input');
+      const container = document.getElementById('preview-container');
+      const status = document.getElementById('status');
+
+      await customElements.whenDefined('pdf-file-preview');
+      status.textContent = 'Custom element registered ✓ — Choose a PDF to preview.';
+
+      input.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        status.textContent = `Loading: ${file.name} (${(file.size / 1024).toFixed(1)} KB)…`;
+
+        const arrayBuffer = await file.arrayBuffer();
+
+        container.innerHTML = '';
+
+        const el = document.createElement('pdf-file-preview');
+        el.pdfFile = {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          arrayBuffer: arrayBuffer,
+          uploadedAt: new Date().toISOString(),
+          s3Key: '',
+        };
+        el.cleanedPdfBuffer = arrayBuffer;
+        el.fields = [];
+
+        container.appendChild(el);
+        status.textContent = `Loaded: ${file.name}`;
+      });
+    </script>
+  </body>
+</html>
